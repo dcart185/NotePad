@@ -118,3 +118,24 @@ class TaskView(APIView):
 			return Response(serializer.data,status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+	def delete(self,request,task_id=None):
+		if task_id is None:
+			return Response({"error":"A task id is needed"},
+				status=status.HTTP_400_BAD_REQUEST)
+
+		try:
+			task = Task.objects.get(pk=task_id)
+		except Task.DoesNotExist:
+			return Response({"error":"Task does not exist."},
+				status=status.HTTP_400_BAD_REQUEST)
+
+		user =request.user
+		if (task.task_writer != user) or (task.note.noteowner != user):
+			return Response({"error":"You do not have permission."},
+				status=status.HTTP_403_FORBIDDEN)
+
+		task.delete()
+
+		return Response({"success":"Task deleted"})
+
+
