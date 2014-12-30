@@ -39,6 +39,7 @@ class NoteView(APIView):
 			return Response({"error":"Note does not exist."},
 				status=status.HTTP_400_BAD_REQUEST)
 
+		#may change when one starts sharing notes with friends
 		if note.noteowner.email != request.user.email:
 			return Response({"error":"You do not have permission."},
 				status=status.HTTP_403_FORBIDDEN)
@@ -64,8 +65,22 @@ class NoteView(APIView):
 	#delete note
 	def delete(self,request,note_id=None):
 		if note_id is None:
-			return Response({"error":"A note id is needed"},status=status.HTTP_400_BAD_REQUEST)
-		
+			return Response({"error":"A note id is needed"},
+				status=status.HTTP_400_BAD_REQUEST)
+
+		try:
+			note = Note.objects.get(pk=note_id)
+		except Note.DoesNotExist:
+			return Response({"error":"Note does not exist"})
+
+		#may change when one starts sharing notes with friends
+		if note.noteowner.email != request.user.email:
+			return Response({"error":"You do not have permission."},
+				status=status.HTTP_403_FORBIDDEN)
+
+		note.delete()
+
+		return Response({"success":"Note deleted"})
 
 
 

@@ -7,6 +7,9 @@ class Note(models.Model):
 	updated_date = models.DateTimeField('date updated',auto_now=True)
 	noteowner= models.ForeignKey(NoteTaker,blank=False,null=False)
 
+	def __str__(self):
+		return self.title
+
 class Task(models.Model):
 	task = models.TextField()
 	note = models.ForeignKey(Note,blank=False,null=False)
