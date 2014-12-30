@@ -30,28 +30,43 @@ class NoteView(APIView):
 	#returns the specific note
 	def get(self,request,note_id=None):
 		if note_id is None:
-			return Response({"error":"A note id is needed"},status=status.HTTP_400_BAD_REQUEST)
-		else:
-			try:
-				note = Note.objects.get(pk=note_id)
-			except Note.DoesNotExist:
-				return Response({"error":"Note does not exist."},status=status.HTTP_400_BAD_REQUEST)
-			serializer = NoteSerializer(note)
-			return Response(serializer.data)
+			return Response({"error":"A note id is needed"},
+				status=status.HTTP_400_BAD_REQUEST)
+		
+		try:
+			note = Note.objects.get(pk=note_id)
+		except Note.DoesNotExist:
+			return Response({"error":"Note does not exist."},
+				status=status.HTTP_400_BAD_REQUEST)
 
+		if note.noteowner.email != request.user.email:
+			return Response({"error":"You do not have permission."},
+				status=status.HTTP_403_FORBIDDEN)
+		
+		serializer = NoteSerializer(note)
+		return Response(serializer.data)
+
+	#creates a new note
 	def post(self,request,note_id=None):
 		try:
 			noteowner = NoteTaker.objects.get(email=request.user.email)
 		except NoteTaker.DoesNotExist:
-			return Response({"error":"User does not exist."},status=status.HTTP_400_BAD_REQUEST)
+			return Response({"error":"User does not exist."},
+				status=status.HTTP_400_BAD_REQUEST)
 
-		#data = request.POST.dict()
-		#data["noteowner"]=noteowner.id
 		serializer = NoteSerializer(data=request.data)
 
 		if serializer.is_valid():
 			serializer.save(noteowner=noteowner)
 			return Response(serializer.data,status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	#delete note
+	def delete(self,request,note_id=None):
+		if note_id is None:
+			return Response({"error":"A note id is needed"},status=status.HTTP_400_BAD_REQUEST)
+		
+
+
 
 
