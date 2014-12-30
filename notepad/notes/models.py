@@ -22,6 +22,9 @@ class Task(models.Model):
 		return (self.user == task_writer or self.user.is_staff or 
 			self.user == self.note.noteowner)
 
+	def __str__(self):
+		return self.task
+
 
 
 

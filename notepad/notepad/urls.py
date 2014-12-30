@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 	url(r'^notes/',NotesView.as_view()),
 	url(r'^note/$',NoteView.as_view()),
 	url(r'^note/(?P<note_id>\d+)/$',NoteView.as_view()),
+	url(r'^task/$',TaskView.as_view()),
 	url(r'^task/(?P<task_id>\d+)/$',TaskView.as_view()),
 	url(r'^.$','notes.views.index')
 )

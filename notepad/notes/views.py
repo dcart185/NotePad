@@ -86,7 +86,7 @@ class NoteView(APIView):
 
 class TaskView(APIView):
 	#returns the specific Task
-	def get(self,request,task_id=None):
+	def get(self,request,task_id=None,note_id=None):
 		if task_id is None:
 			return Response({"error":"a task id is required"},
 				status=status.HTTP_400_BAD_REQUEST)
@@ -104,4 +104,17 @@ class TaskView(APIView):
 		serializer = TaskSerializer(task)
 		return Response(serializer.data)
 
+	def post(self,request,task_id=None):
+		try:
+			task_writer = NoteTaker.objects.get(email=request.user.email)
+		except NoteTaker.DoesNotExist:
+			return Response({"error":"User does not exist."},
+				status=status.HTTP_400_BAD_REQUEST)
+
+		serializer=TaskSerializer(data=request.data)
+
+		if serializer.is_valid():
+			serializer.save(task_writer=task_writer)
+			return Response(serializer.data,status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
