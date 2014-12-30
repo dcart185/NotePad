@@ -1,30 +1,26 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from notetakerserializer import NoteTakerSerializer
 from models import NoteTaker
 
-@api_view(['GET'])
-def notetaker_detail(request):
 
-	try:
-		email = request.GET.get("email",None)
+class NoteTakerView(APIView):
+	def get(self,request):
+		try:
+			notetaker = NoteTaker.objects.get(email=request.user.email)
+			serializer = NoteTakerSerializer(notetaker)
+			return Response(serializer.data)
+		except NoteTaker.DoesNotExist:
+			return Response({"error":"Note taker does not exist"},
+				status=status.HTTP_400_BAD_REQUEST)
 
-		if email is None:
-			return Response({"error":"Must include note taker's email"})
-		
-		elif email == request.user.email:
-			notetaker = NoteTaker.objects.get(email=email)
-		
-		else:
-			return Response({"error":"You do not have permission"})
-	
-	except NoteTaker.DoesNotExist:
-		return Response({"error":"Note taker does not exist"})
 
-	if request.method == 'GET':
-		serializer = NoteTakerSerializer(notetaker)
-		return Response(serializer.data)
+
+
+
 
