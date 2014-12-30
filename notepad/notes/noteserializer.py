@@ -12,7 +12,7 @@ class NoteSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = Note
-		fields = ('title','created_date','updated_date','task_set',)
+		fields = ('id','title','created_date','updated_date','task_set',)
 
 	def create(self,validated_data):
 		return Note.objects.create(**validated_data)
