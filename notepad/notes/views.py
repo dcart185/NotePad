@@ -45,12 +45,12 @@ class NoteView(APIView):
 		except NoteTaker.DoesNotExist:
 			return Response({"error":"User does not exist."},status=status.HTTP_400_BAD_REQUEST)
 
-		data = request.POST.dict()
-		data["noteowner"]=noteowner.id
-		serializer = NoteSerializer(data=data)
+		#data = request.POST.dict()
+		#data["noteowner"]=noteowner.id
+		serializer = NoteSerializer(data=request.data)
 
 		if serializer.is_valid():
-			serializer.save()
+			serializer.save(noteowner=noteowner)
 			return Response(serializer.data,status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
