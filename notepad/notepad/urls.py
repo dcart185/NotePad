@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from notes.views import NotesView
-from notes.views import NoteView
+from notes.views import NotesView, NoteView, TaskView
+
 
 urlpatterns = patterns('',
 	# Examples:
@@ -14,5 +14,6 @@ urlpatterns = patterns('',
 	url(r'^notes/',NotesView.as_view()),
 	url(r'^note/$',NoteView.as_view()),
 	url(r'^note/(?P<note_id>\d+)/$',NoteView.as_view()),
+	url(r'^task/(?P<task_id>\d+)/$',TaskView.as_view()),
 	url(r'^.$','notes.views.index')
 )

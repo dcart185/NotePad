@@ -2,8 +2,9 @@ from django.shortcuts import render, HttpResponse
 from rest_framework import authentication, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from notes.models import Note
+from notes.models import Note,Task
 from notes.noteserializer import NoteSerializer
+from notes.taskserializer import TaskSerializer
 from notetaker.models import NoteTaker
 from rest_framework.parsers import JSONParser
 
@@ -83,5 +84,24 @@ class NoteView(APIView):
 		return Response({"success":"Note deleted"})
 
 
+class TaskView(APIView):
+	#returns the specific Task
+	def get(self,request,task_id=None):
+		if task_id is None:
+			return Response({"error":"a task id is required"},
+				status=status.HTTP_400_BAD_REQUEST)
+		try:
+			task = Task.objects.get(pk=task_id)
+		except Task.DoesNotExist:
+			return Response({"error":"Task does not exist."},
+				status=status.HTTP_400_BAD_REQUEST)
+
+		user =request.user
+		if (task.task_writer != user) or (task.note.noteowner != user):
+			return Response({"error":"You do not have permission."},
+				status=status.HTTP_403_FORBIDDEN)
+
+		serializer = TaskSerializer(task)
+		return Response(serializer.data)
 
 
