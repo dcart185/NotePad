@@ -19,7 +19,12 @@ class NoteTakerView(APIView):
 			return Response({"error":"Note taker does not exist"},
 				status=status.HTTP_400_BAD_REQUEST)
 
-
+	def post(self,request):
+		serializer = NoteTakerSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data,status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
