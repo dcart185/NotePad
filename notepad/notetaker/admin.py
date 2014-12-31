@@ -15,7 +15,7 @@ class NoteTakerCreationForm(forms.ModelForm):
 
 	class Meta:
 		model = NoteTaker
-		fields = ('email', 'is_admin')
+		fields = ('email', 'first_name','last_name','is_admin')
 
 	def clean_password2(self):
 		password1 = self.cleaned_data.get("password1")
@@ -28,7 +28,6 @@ class NoteTakerCreationForm(forms.ModelForm):
 
 	def save(self, commit = True):
 		user = super(NoteTakerCreationForm,self).save(commit=False)
-		print self.cleaned_data["password1"]
 		user.set_password(self.cleaned_data["password1"])
 
 		if commit:
@@ -37,11 +36,11 @@ class NoteTakerCreationForm(forms.ModelForm):
 
 
 class NoteTakerChangeForm(forms.ModelForm):
-	password = ReadOnlyPasswordHashField()
+	password = ReadOnlyPasswordHashField(label=("Password!"))
 
 	class Meta:
 		model = NoteTaker
-		fields = ('email','password','is_active','is_admin')
+		fields = ('email','password','first_name','last_name','is_active','is_admin')
 
 	def clean_password(self):
 		return self.initial["password"]
@@ -50,11 +49,12 @@ class NoteTakerAdmin(UserAdmin):
 	form = NoteTakerChangeForm
 	add_form = NoteTakerCreationForm
 
-	list_display = ('email','is_staff','is_admin')
+
+	list_display = ('email','first_name','last_name','is_staff','is_admin')
 	list_filter = ('is_admin',)
 	
 	fieldsets = (
-		(None, {'fields':('email','password')}),
+		(None, {'fields':('email','first_name','last_name','password')}),
 		('Permissions',{'fields':('is_admin',)}),
 	)
 
@@ -62,7 +62,7 @@ class NoteTakerAdmin(UserAdmin):
 	add_fieldsets = (
 		(None,{
 			'classes':('wide',),
-			'fields':('email','password1','password2')}
+			'fields':('email','first_name','last_name','password1','password2')}
 		),
 	)
 

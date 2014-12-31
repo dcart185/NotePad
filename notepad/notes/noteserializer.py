@@ -8,7 +8,6 @@ from notetaker.models import NoteTaker
 class NoteSerializer(serializers.ModelSerializer):
 
 	task_set = TaskSerializer(many=True,read_only=True)
-	#noteowner = serializers.PrimaryKeyRelatedField(queryset=NoteTaker.objects.all())
 	
 	class Meta:
 		model = Note

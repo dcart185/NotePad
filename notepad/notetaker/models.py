@@ -7,12 +7,18 @@ from django.contrib.auth.models import (
 
 class NoteTakerManager(BaseUserManager):
 
-	def create_user(self,email, password):
+	def create_user(self,email, password, first_name, last_name):
 		if not email:
 			raise ValueError('User must have an email address')
 
 		if not password:
 			raise ValueError('User must have a password')
+
+		if not first_name:
+			raise ValueError('User must have a first name')
+
+		if not last_name:
+			raise ValueError('User must have a last name')
 
 		user = self.model(
 			email=self.normalize_email(email)
@@ -28,6 +34,11 @@ class NoteTaker(AbstractBaseUser):
 		unique=True
 	)
 
+	first_name = models.CharField(verbose_name='first name',
+		max_length=100,blank=False,null=False, default="")
+	last_name = models.CharField(verbose_name='last name',
+		max_length=100, blank=False,null=False, default="")
+
 	is_active = models.BooleanField(default=True)
 	is_admin = models.BooleanField(default=False)
 
@@ -39,7 +50,7 @@ class NoteTaker(AbstractBaseUser):
 	USERNAME_FIELD = 'email'
 
 	def get_full_name(self):
-		return self.email
+		return self.first_name + " " + self.last_name
 
 	def get_short_name(self):
 		return self.email
