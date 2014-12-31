@@ -5,7 +5,7 @@ from rest_framework import serializers
 class NoteTakerSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = NoteTaker
-		fields = ('email', 'password','is_staff')
+		fields = ('id','email', 'first_name','last_name','password','is_staff')
 		write_only_fields = ('password',)
 
 	def create(self,validated_data):
